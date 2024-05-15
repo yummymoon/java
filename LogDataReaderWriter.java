@@ -3,7 +3,6 @@ import java.util.*;
 
 public class LogDataReaderWriter {
     private String filePath;
-
     public LogDataReaderWriter(String filePath) {
         this.filePath = filePath;
     }
