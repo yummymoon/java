@@ -49,7 +49,7 @@ public class LogDataReaderWriter {
         for (int i = 0; i < logData.size(); i++) {
             String line = logData.get(i);
             String[] tokens = line.trim().split("\\s+");
-            for (int j = 1; j < tokens.length; j++) { // 跳过深度列
+            for (int j = 1; j < tokens.length; j++) { 
                 try {
                     float value = Float.parseFloat(tokens[j]);
                     value += 2.0f;
