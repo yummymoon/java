@@ -40,16 +40,23 @@ class Main {
                     }
                     break;
                 case 2:
+                case 3:
                     try {
                         List<LogData> logDataList = processor.readLogData();
                         processor.processLogData(logDataList);
-                        System.out.println("处理后的测井数据：");
-                        processor.printLogData(logDataList);
+                        if (choice == 2) {                           
+                            processor.printLogData(logDataList);
+                        }else{
+                            System.out.print("请输入要查看的深度点：");
+                            int depth_point = scanner.nextInt();
+                            
+                            // processor.processLogData(logDataList);
+                        }
+                        // System.out.println("处理后的测井数据：");
+                        // processor.printLogData(logDataList);
                     } catch (FileNotFoundException e) {
                         System.err.println("找不到数据文件：" + logdata_Path);
                     }
-                    break;
-                case 3:
                     break;
                 case 4:
                     break;
@@ -69,12 +76,12 @@ class Main {
 
 class LogDataProcessor {
     private String logdata_Path;
-    private String filePath;
+    // private String filePath;
 
     public LogParameters parameters;
 
     public LogDataProcessor(String logdata_Path, String filePath) {
-        this.filePath = filePath;
+        // this.filePath = filePath;
         this.logdata_Path = logdata_Path;
         this.parameters = new LogParameters();
         try {
@@ -109,14 +116,42 @@ class LogDataProcessor {
         return logDataList;
     }
 
-    // 对测井数据进行简单运算（加2.0）
+    // 计算泥质含量、孔隙度、饱和度
     public void processLogData(List<LogData> logDataList) {
+        float GRmin = parameters.getParameter("GRmin");
+        float GRmax = parameters.getParameter("GRmax");
+        float GCUR = parameters.getParameter("GCUR");
+        float DTma = parameters.getParameter("DTma");
+        float DTf = parameters.getParameter("DTf");
+        float a = parameters.getParameter("a");
+        float b = parameters.getParameter("b");
+        float Rw = parameters.getParameter("Rw");
+        float m = parameters.getParameter("m");
+        float n = parameters.getParameter("n");
         for (LogData logData : logDataList) {
             float[] values = logData.getValues();
-            for (int i = 0; i < values.length; i++) {
-                values[i] += 2.0f;
+
+            // 计算泥质含量VSH
+            float SH = (values[2]-GRmin) / (GRmax-GRmin);
+            double VSH = (Math.pow(2, GCUR*SH) - 1) / (Math.pow(2, GCUR) - 1);
+            if (VSH > 1) {
+                VSH = 1;
+            }else if (VSH < 0) {
+                VSH = 0;
             }
-            logData.setValues(values);
+            // 计算孔隙度
+            double POR = (values[1] - DTma) / (DTf - DTma);
+            // 计算饱和度
+            double Sw = Math.pow(a*b*Rw / (Math.pow(POR,m)*values[3]) , 1/n);
+            double SO = 1 - Sw;
+            // 创建一个新的float数组，并设置正确的值
+            float[] newValues = new float[values.length + 3];
+            System.arraycopy(values, 0, newValues, 0, values.length);
+            newValues[values.length] = (float) VSH;
+            newValues[values.length + 1] = (float) POR;
+            newValues[values.length + 2] = (float) SO;
+
+            logData.setValues(newValues);
         }
     }
 
@@ -127,6 +162,7 @@ class LogDataProcessor {
         }
     }
 }
+
 
 class LogData {
     private float depth;
@@ -186,7 +222,7 @@ class LogParameters {
     }
 
     public void printParameters() {
-        for (Map.Entry<String, Float> entry : parameters.entrySet()) {
+        for (Map.Entry<String, Float> entry : parameters.entrySet())    {
             System.out.println(entry.getKey() + " = " + entry.getValue());
         }
     }
