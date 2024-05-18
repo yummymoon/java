@@ -46,14 +46,20 @@ class Main {
                         processor.processLogData(logDataList);
                         if (choice == 2) {                           
                             processor.printLogData(logDataList);
-                        }else{
-                            System.out.print("请输入要查看的深度点：");
+                        }else{ 
+                            System.out.print("请输入要查看的深度点(0~15)：");
                             int depth_point = scanner.nextInt();
-                            
-                            // processor.processLogData(logDataList);
+                            if (depth_point >= 0 && depth_point < 16) {
+                                float depth = logDataList.get(depth_point).getDepth();
+                                float[]depth_array = logDataList.get(depth_point).getValues();
+                                System.out.print(depth);
+                                for (int i = 0; i < depth_array.length; i++) {
+                                    System.out.print(" " + depth_array[i]);
+                                }System.out.println("");
+                            }else{
+                                System.out.println("深度点不合法");
+                            }
                         }
-                        // System.out.println("处理后的测井数据：");
-                        // processor.printLogData(logDataList);
                     } catch (FileNotFoundException e) {
                         System.err.println("找不到数据文件：" + logdata_Path);
                     }
@@ -141,9 +147,19 @@ class LogDataProcessor {
             }
             // 计算孔隙度
             double POR = (values[1] - DTma) / (DTf - DTma);
+            if (POR > 0.4) {
+                POR = 0.4;
+            }else if (POR < 0) {    
+                POR = 0.005;
+            }
             // 计算饱和度
             double Sw = Math.pow(a*b*Rw / (Math.pow(POR,m)*values[3]) , 1/n);
             double SO = 1 - Sw;
+            if (SO < 0) {
+                SO = 0;
+            }else if (SO > 1) {
+                SO = 1;
+            }
             // 创建一个新的float数组，并设置正确的值
             float[] newValues = new float[values.length + 3];
             System.arraycopy(values, 0, newValues, 0, values.length);
