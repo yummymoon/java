@@ -41,12 +41,13 @@ class Main {
                     break;
                 case 2:
                 case 3:
+                case 4:
                     try {
                         List<LogData> logDataList = processor.readLogData();
                         processor.processLogData(logDataList);
                         if (choice == 2) {                           
                             processor.printLogData(logDataList);
-                        }else{ 
+                        }else if (choice == 3) { 
                             System.out.print("请输入要查看的深度点(0~15)：");
                             int depth_point = scanner.nextInt();
                             if (depth_point >= 0 && depth_point < 16) {
@@ -59,12 +60,13 @@ class Main {
                             }else{
                                 System.out.println("深度点不合法");
                             }
+                        }else if (choice == 4) {
+                            processor.printStatistics(logDataList);
+                            break;
                         }
                     } catch (FileNotFoundException e) {
                         System.err.println("找不到数据文件：" + logdata_Path);
                     }
-                    break;
-                case 4:
                     break;
                 case 5:
                     break;
@@ -82,8 +84,18 @@ class Main {
 
 class LogDataProcessor {
     private String logdata_Path;
+    private double VSHmax = 0;
+    private double VSHmin = 0;
+    private double PORmax = 0;
+    private double PORmin = 0;
+    private double SOmax = 0;
+    private double SOmin = 0;
+    private double VSHall = 0;
+    private double PORall = 0;
+    private double SOall = 0;
     // private String filePath;
 
+    // 读取参数
     public LogParameters parameters;
 
     public LogDataProcessor(String logdata_Path, String filePath) {
@@ -168,17 +180,53 @@ class LogDataProcessor {
             newValues[values.length + 2] = (float) SO;
 
             logData.setValues(newValues);
+
+            VSHall += VSH;
+            PORall += POR;
+            SOall += SO;
+            if (VSH >= VSHmax) {
+                VSHmax = VSH;
+            }else {
+                VSHmin = VSH;
+            }
+            if (POR >= PORmax) {
+                PORmax = POR;
+            }else {
+                PORmin = POR;
+            }
+            if (SO >= SOmax) {
+                SOmax = SO;
+            }else {
+                SOmin = SO;
+            }
         }
     }
 
     // 打印测井数据
     public void printLogData(List<LogData> logDataList) {
+
         for (LogData logData : logDataList) {
             logData.print();
         }
     }
+    
+    // 打印极值、平均值
+    public void printStatistics(List<LogData> logDatas){
+        System.out.println("VSHmax = " + VSHmax);
+        System.out.println("VSHmin = " + VSHmin);
+        System.out.println("VSHavg = " + VSHall / logDatas.size());
+        System.out.println("");
+        System.out.println("PORmax = " + PORmax);
+        System.out.println("PORmin = " + PORmin);
+        System.out.println("PORavg = " + PORall / logDatas.size());
+        System.out.println("");
+        System.out.println("SOmax = " + SOmax);
+        System.out.println("SOmin = " + SOmin);
+        System.out.println("SOavg = " + SOall / logDatas.size());
+        System.out.println("");
+    }
+    
 }
-
 
 class LogData {
     private float depth;
