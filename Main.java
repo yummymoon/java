@@ -42,6 +42,7 @@ class Main {
                 case 2:
                 case 3:
                 case 4:
+                case 5:
                     try {
                         List<LogData> logDataList = processor.readLogData();
                         processor.processLogData(logDataList);
@@ -63,12 +64,12 @@ class Main {
                         }else if (choice == 4) {
                             processor.printStatistics(logDataList);
                             break;
+                        }else if (choice == 5) {
+                            processor.sortByPOR(logDataList);
                         }
                     } catch (FileNotFoundException e) {
                         System.err.println("找不到数据文件：" + logdata_Path);
                     }
-                    break;
-                case 5:
                     break;
                 case 6:
                     break;
@@ -204,28 +205,43 @@ class LogDataProcessor {
 
     // 打印测井数据
     public void printLogData(List<LogData> logDataList) {
-
         for (LogData logData : logDataList) {
             logData.print();
         }
     }
     
     // 打印极值、平均值
-    public void printStatistics(List<LogData> logDatas){
+    public void printStatistics(List<LogData> logDataList){
         System.out.println("VSHmax = " + VSHmax);
         System.out.println("VSHmin = " + VSHmin);
-        System.out.println("VSHavg = " + VSHall / logDatas.size());
+        System.out.println("VSHavg = " + VSHall / logDataList.size());
         System.out.println("");
         System.out.println("PORmax = " + PORmax);
         System.out.println("PORmin = " + PORmin);
-        System.out.println("PORavg = " + PORall / logDatas.size());
+        System.out.println("PORavg = " + PORall / logDataList.size());
         System.out.println("");
         System.out.println("SOmax = " + SOmax);
         System.out.println("SOmin = " + SOmin);
-        System.out.println("SOavg = " + SOall / logDatas.size());
+        System.out.println("SOavg = " + SOall / logDataList.size());
         System.out.println("");
     }
     
+    // 按饱和度排序
+    public void sortByPOR(List<LogData> logDatalList){
+        int[] array= new int[]{0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15};
+        for (int i = 0 ; i < logDatalList.size() - 1 ; i++) {
+            for (int j = i + 1 ; j < logDatalList.size(); j++) {
+                if (logDatalList.get(i).getValues()[10] < logDatalList.get(j).getValues()[10]) {
+                    int temp = array[i];
+                    array[i] = array[j];
+                    array[j] = temp;
+                }
+            }
+        }for (int i = 0 ; i < logDatalList.size() ; i++) {
+            System.out.print(array[i] + " ");
+            System.out.println(logDatalList.get(array[i]).getValues()[10]);
+        }
+    }
 }
 
 class LogData {
