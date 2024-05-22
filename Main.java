@@ -31,6 +31,7 @@ class Main {
                     try {
                         List<LogData> logDataList = processor.readLogData();
                         System.out.println("原始测井数据：");
+                        processor.printFirstLine();
                         processor.printLogData(logDataList);
                         System.out.println("");
                         System.out.println("参数信息：");
@@ -46,18 +47,16 @@ class Main {
                     try {
                         List<LogData> logDataList = processor.readLogData();
                         processor.processLogData(logDataList);
-                        if (choice == 2) {                           
+                        if (choice == 2) {
+                            processor.printFirstLine();                           
                             processor.printLogData(logDataList);
                         }else if (choice == 3) { 
                             System.out.print("请输入要查看的深度点(0~15)：");
                             int depth_point = scanner.nextInt();
+                            processor.printFirstLine();
                             if (depth_point >= 0 && depth_point < 16) {
-                                float depth = logDataList.get(depth_point).getDepth();
-                                float[]depth_array = logDataList.get(depth_point).getValues();
-                                System.out.print(depth);
-                                for (int i = 0; i < depth_array.length; i++) {
-                                    System.out.print(" " + depth_array[i]);
-                                }System.out.println("");
+                                logDataList.get(depth_point).print();
+                    System.out.println("");
                             }else{
                                 System.out.println("深度点不合法");
                             }
@@ -95,6 +94,7 @@ class LogDataProcessor {
     private double PORall = 0;
     private double SOall = 0;
     // private String filePath;
+    String[] types = {};
 
     // 读取参数
     public LogParameters parameters;
@@ -119,6 +119,9 @@ class LogDataProcessor {
         while (fileScanner.hasNextLine()) {
             String line = fileScanner.nextLine().trim();
             lineNumber++;
+            if (line.matches("^#.*$")){
+                types = line.split("\\s+");
+            }
             if (line.matches("^\\d.*$")) { // 检查行是否以数字开头
                 if (lineNumber >= 15 && lineNumber <= 30) {
                     String[] tokens = line.split("\\s+");
@@ -203,6 +206,13 @@ class LogDataProcessor {
         }
     }
 
+    // 打印第一行
+    public void printFirstLine() {
+        for (String type : types) {
+            System.out.printf("%-10s",type);
+        }System.out.println("");
+    }
+
     // 打印测井数据
     public void printLogData(List<LogData> logDataList) {
         for (LogData logData : logDataList) {
@@ -242,8 +252,8 @@ class LogDataProcessor {
             array[i] = array[maxnum];
             array[maxnum] = tmp;
         }System.out.println("按照饱和度由大到小排序：");
+        printFirstLine();
         for (int i = 0 ; i < logDatalList.size() ; i++) {
-            System.out.print(array[i] + " ");
             logDatalList.get(array[i]).print();
         }
     }
@@ -272,9 +282,9 @@ class LogData {
     }
 
     public void print() {
-        System.out.printf("%.4f", depth);
+        System.out.printf("%-10.4f", depth);
         for (float value : values) {
-            System.out.printf(" %.4f", value);
+            System.out.printf("%-10.4f", value);
         }
         System.out.println();
     }
