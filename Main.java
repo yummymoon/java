@@ -229,17 +229,22 @@ class LogDataProcessor {
     // 按饱和度排序
     public void sortByPOR(List<LogData> logDatalList){
         int[] array= new int[]{0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15};
+
         for (int i = 0 ; i < logDatalList.size() - 1 ; i++) {
-            for (int j = i + 1 ; j < logDatalList.size(); j++) {
-                if (logDatalList.get(i).getValues()[10] < logDatalList.get(j).getValues()[10]) {
-                    int temp = array[i];
-                    array[i] = array[j];
-                    array[j] = temp;
+            double max = logDatalList.get(i).getValues()[10];
+            int maxnum = i;
+            for (int j = i + 1 ; j < logDatalList.size() ; j++){
+                if (logDatalList.get(array[j]).getValues()[10] > max){
+                    max = logDatalList.get(j).getValues()[10];
+                    maxnum = array[j];
                 }
-            }
-        }for (int i = 0 ; i < logDatalList.size() ; i++) {
+            }int tmp = array[i];
+            array[i] = array[maxnum];
+            array[maxnum] = tmp;
+        }System.out.println("按照饱和度由大到小排序：");
+        for (int i = 0 ; i < logDatalList.size() ; i++) {
             System.out.print(array[i] + " ");
-            System.out.println(logDatalList.get(array[i]).getValues()[10]);
+            logDatalList.get(array[i]).print();
         }
     }
 }
@@ -253,10 +258,11 @@ class LogData {
         this.values = values;
     }
 
+    // 获取深度值
     public float getDepth() {
         return depth;
     }
-
+    // 获取值数组
     public float[] getValues() {
         return values;
     }
