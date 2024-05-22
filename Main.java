@@ -44,6 +44,7 @@ class Main {
                 case 3:
                 case 4:
                 case 5:
+                case 6:
                     try {
                         List<LogData> logDataList = processor.readLogData();
                         processor.processLogData(logDataList);
@@ -65,12 +66,12 @@ class Main {
                             break;
                         }else if (choice == 5) {
                             processor.sortBySO(logDataList);
-                        }
+                        }else if (choice == 6) {
+                            processor.classByPOR(logDataList);
+                        }                   
                     } catch (FileNotFoundException e) {
                         System.err.println("找不到数据文件：" + logdata_Path);
                     }
-                    break;
-                case 6:
                     break;
                 case 7:
                     break;
@@ -123,7 +124,7 @@ class LogDataProcessor {
                 types = line.split("\\s+");
             }
             if (line.matches("^\\d.*$")) { // 检查行是否以数字开头
-                if (lineNumber >= 15 && lineNumber <= 30) {
+                if (lineNumber >= 30 && lineNumber <= 45) {
                     String[] tokens = line.split("\\s+");
                     float depth = Float.parseFloat(tokens[0]);
                     float[] values = new float[tokens.length - 1];
@@ -266,8 +267,18 @@ class LogDataProcessor {
     }
 
     // 按照储层分级
-    public void classByPOR{
-        
+    public void classByPOR(List<LogData> logDatalList){
+        for (LogData logData : logDatalList){
+            if (logData.getValues()[10] > 0.12){
+                System.out.println("储层分级为：Ⅰ 类储层");
+            }else if(logData.getValues()[10] > 0.08 && logData.getValues()[10] <= 0.12){
+                System.out.println("储层分级为：Ⅱ 类储层");
+            }else if (logData.getValues()[10] > 0.05 && logData.getValues()[10] <= 0.08){
+                System.out.println("储层分级为：Ⅲ 类储层");
+            }else {
+                System.out.println("储层分级为：Ⅳ 类储层");
+            }
+        }
     }
 
 }
