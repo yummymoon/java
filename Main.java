@@ -64,7 +64,7 @@ class Main {
                             processor.printStatistics(logDataList);
                             break;
                         }else if (choice == 5) {
-                            processor.sortByPOR(logDataList);
+                            processor.sortBySO(logDataList);
                         }
                     } catch (FileNotFoundException e) {
                         System.err.println("找不到数据文件：" + logdata_Path);
@@ -182,9 +182,16 @@ class LogDataProcessor {
             newValues[values.length] = (float) VSH;
             newValues[values.length + 1] = (float) POR;
             newValues[values.length + 2] = (float) SO;
-
             logData.setValues(newValues);
-
+            //types更新
+            String[] types_old = Arrays.copyOf(types, types.length);
+            types = new String[13];
+            System.arraycopy(types_old, 0, types, 0, Math.min(types_old.length, types.length));
+            // 在新数组的末尾添加三个特定的字符串
+            types[types.length - 3] = "VSH";
+            types[types.length - 2] = "POR";
+            types[types.length - 1] = "SO";
+            
             VSHall += VSH;
             PORall += POR;
             SOall += SO;
@@ -237,15 +244,15 @@ class LogDataProcessor {
     }
     
     // 按饱和度排序
-    public void sortByPOR(List<LogData> logDatalList){
+    public void sortBySO(List<LogData> logDatalList){
         int[] array= new int[]{0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15};
 
         for (int i = 0 ; i < logDatalList.size() - 1 ; i++) {
-            double max = logDatalList.get(i).getValues()[10];
+            double max = logDatalList.get(i).getValues()[11];
             int maxnum = i;
             for (int j = i + 1 ; j < logDatalList.size() ; j++){
-                if (logDatalList.get(array[j]).getValues()[10] > max){
-                    max = logDatalList.get(j).getValues()[10];
+                if (logDatalList.get(array[j]).getValues()[11] > max){
+                    max = logDatalList.get(j).getValues()[11];
                     maxnum = array[j];
                 }
             }int tmp = array[i];
@@ -257,6 +264,12 @@ class LogDataProcessor {
             logDatalList.get(array[i]).print();
         }
     }
+
+    // 按照储层分级
+    public void classByPOR{
+        
+    }
+
 }
 
 class LogData {
