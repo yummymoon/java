@@ -251,12 +251,12 @@ class LogDataProcessor {
         int[] array= new int[]{0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15};
 
         for (int i = 0 ; i < logDatalList.size() - 1 ; i++) {
-            double max = logDatalList.get(i).getValues()[11];
+            double max = logDatalList.get(array[i]).getValues()[11];
             int maxnum = i;
             for (int j = i + 1 ; j < logDatalList.size() ; j++){
                 if (logDatalList.get(array[j]).getValues()[11] > max){
-                    max = logDatalList.get(j).getValues()[11];
-                    maxnum = array[j];
+                    max = logDatalList.get(array[j]).getValues()[11];
+                    maxnum = j;
                 }
             }int tmp = array[i];
             array[i] = array[maxnum];
