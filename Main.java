@@ -87,13 +87,14 @@ class LogDataProcessor {
     private String logdata_Path;
     private double VSHmax = 0;
     private double VSHmin = 0;
+    private double VSHall = 0;
     private double PORmax = 0;
     private double PORmin = 0;
+    private double PORall = 0;
     private double SOmax = 0;
     private double SOmin = 0;
-    private double VSHall = 0;
-    private double PORall = 0;
     private double SOall = 0;
+    private double processTime= 0;
     // private String filePath;
     String[] types = {};
 
@@ -211,7 +212,7 @@ class LogDataProcessor {
             }else {
                 SOmin = SO;
             }
-        }
+        }processTime += 1;
     }
 
     // 打印第一行
@@ -232,15 +233,15 @@ class LogDataProcessor {
     public void printStatistics(List<LogData> logDataList){
         System.out.println("VSHmax = " + VSHmax);
         System.out.println("VSHmin = " + VSHmin);
-        System.out.println("VSHavg = " + VSHall / logDataList.size());
+        System.out.println("VSHavg = " + VSHall / logDataList.size() / processTime);
         System.out.println("");
         System.out.println("PORmax = " + PORmax);
         System.out.println("PORmin = " + PORmin);
-        System.out.println("PORavg = " + PORall / logDataList.size());
+        System.out.println("PORavg = " + PORall / logDataList.size() / processTime);
         System.out.println("");
         System.out.println("SOmax = " + SOmax);
         System.out.println("SOmin = " + SOmin);
-        System.out.println("SOavg = " + SOall / logDataList.size());
+        System.out.println("SOavg = " + SOall / logDataList.size() / processTime);
         System.out.println("");
     }
     
@@ -268,18 +269,41 @@ class LogDataProcessor {
 
     // 按照储层分级
     public void classByPOR(List<LogData> logDatalList){
+        int[] time = {0,0,0,0};
+        printFirstLine();
+        System.out.println("Ⅰ 类储层:");
         for (LogData logData : logDatalList){
             if (logData.getValues()[10] > 0.12){
-                System.out.println("储层分级为：Ⅰ 类储层");
-            }else if(logData.getValues()[10] > 0.08 && logData.getValues()[10] <= 0.12){
-                System.out.println("储层分级为：Ⅱ 类储层");
-            }else if (logData.getValues()[10] > 0.05 && logData.getValues()[10] <= 0.08){
-                System.out.println("储层分级为：Ⅲ 类储层");
-            }else {
-                System.out.println("储层分级为：Ⅳ 类储层");
+                logData.print();
+                time[0]++;
             }
-        }
+        }System.out.println("共有" + time[0] + "个深度点");
+        System.out.println("");
+        System.out.println("Ⅱ 类储层:");
+        for (LogData logData : logDatalList){
+            if (logData.getValues()[10] > 0.08 && logData.getValues()[10] <= 0.12){
+                logData.print();
+                time[1]++;
+            }
+        }System.out.println("共有" + time[1] + "个深度点");
+        System.out.println("");
+        System.out.println("Ⅲ 类储层:");
+        for (LogData logData : logDatalList){
+            if (logData.getValues()[10] > 0.05 && logData.getValues()[10] <= 0.08){
+                logData.print();
+                time[2]++;
+            }
+        }System.out.println("共有" + time[2] + "个深度点");
+        System.out.println("");
+        System.out.println("Ⅳ 类储层:");
+        for (LogData logData : logDatalList){
+            if (logData.getValues()[10] <= 0.05){
+                logData.print();
+                time[3]++;
+            }
+        }System.out.println("共有" + time[3] + "个深度点");
     }
+
 
 }
 
