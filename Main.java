@@ -45,6 +45,7 @@ class Main {
                 case 4:
                 case 5:
                 case 6:
+                case 7:
                     try {
                         List<LogData> logDataList = processor.readLogData();
                         processor.processLogData(logDataList);
@@ -57,7 +58,7 @@ class Main {
                             processor.printFirstLine();
                             if (depth_point >= 0 && depth_point < 16) {
                                 logDataList.get(depth_point).print();
-                    System.out.println("");
+                                System.out.println("");
                             }else{
                                 System.out.println("深度点不合法");
                             }
@@ -68,12 +69,12 @@ class Main {
                             processor.sortBySO(logDataList);
                         }else if (choice == 6) {
                             processor.classByPOR(logDataList);
-                        }                   
-                    } catch (FileNotFoundException e) {
+                        }else if (choice == 7) {
+                            processor.showFullOfOil(logDataList);
+                        }
+                    }catch (FileNotFoundException e) {
                         System.err.println("找不到数据文件：" + logdata_Path);
                     }
-                    break;
-                case 7:
                     break;
                 default:
                     System.out.println("无效的选项，请重新选择");
@@ -125,7 +126,7 @@ class LogDataProcessor {
                 types = line.split("\\s+");
             }
             if (line.matches("^\\d.*$")) { // 检查行是否以数字开头
-                if (lineNumber >= 30 && lineNumber <= 45) {
+                if (lineNumber >= 15 && lineNumber <= 30) {
                     String[] tokens = line.split("\\s+");
                     float depth = Float.parseFloat(tokens[0]);
                     float[] values = new float[tokens.length - 1];
@@ -273,7 +274,7 @@ class LogDataProcessor {
         printFirstLine();
         System.out.println("Ⅰ 类储层:");
         for (LogData logData : logDatalList){
-            if (logData.getValues()[10] > 0.12){
+            if (logData.getValues()[10] > 0.12 && logData.getValues()[9] <= 0.25){
                 logData.print();
                 time[0]++;
             }
@@ -281,7 +282,7 @@ class LogDataProcessor {
         System.out.println("");
         System.out.println("Ⅱ 类储层:");
         for (LogData logData : logDatalList){
-            if (logData.getValues()[10] > 0.08 && logData.getValues()[10] <= 0.12){
+            if (logData.getValues()[10] > 0.08 && logData.getValues()[10] <= 0.12 && logData.getValues()[9] <= 0.25){
                 logData.print();
                 time[1]++;
             }
@@ -289,7 +290,7 @@ class LogDataProcessor {
         System.out.println("");
         System.out.println("Ⅲ 类储层:");
         for (LogData logData : logDatalList){
-            if (logData.getValues()[10] > 0.05 && logData.getValues()[10] <= 0.08){
+            if (logData.getValues()[10] > 0.05 && logData.getValues()[10] <= 0.08 && logData.getValues()[9] <= 0.25){
                 logData.print();
                 time[2]++;
             }
@@ -297,13 +298,22 @@ class LogDataProcessor {
         System.out.println("");
         System.out.println("Ⅳ 类储层:");
         for (LogData logData : logDatalList){
-            if (logData.getValues()[10] <= 0.05){
+            if (logData.getValues()[10] <= 0.05 && logData.getValues()[9] <= 0.25){
                 logData.print();
                 time[3]++;
             }
         }System.out.println("共有" + time[3] + "个深度点");
     }
 
+    // 显示查询好油层深度点处理成果数据
+    public void showFullOfOil(List<LogData> logDatalList){
+        System.out.println("好油层深度点数据：");
+        for (LogData logData : logDatalList){
+            if (logData.getValues()[9] <= 0.25 && logData.getValues()[10] > 0.06 && logData.getValues()[11] >= 0.6){
+                logData.print();
+            }
+        }
+    }
 
 }
 
@@ -366,7 +376,7 @@ class LogParameters {
     }
 
     public void printParameters() {
-        for (Map.Entry<String, Float> entry : parameters.entrySet())    {
+        for (Map.Entry<String, Float> entry : parameters.entrySet()){
             System.out.println(entry.getKey() + " = " + entry.getValue());
         }
     }
