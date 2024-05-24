@@ -214,6 +214,22 @@ class LogDataProcessor {
                 SOmin = SO;
             }
         }processTime += 1;
+       //保存数据到文件
+       try {
+            FileWriter file = new FileWriter("D:\\大数据22203_Results_15.txt");
+            for (String type : types) {
+                file.write(String.format("%12s", type));
+            }file.write("\n");
+            for (LogData logData : logDataList) {
+                file.write(String.format("%-10.6s", String.valueOf(logData.getDepth()))+ " ");
+                for (float value : logData.getValues()) {
+                    file.write(String.format("%-10.6s", String.valueOf(value))+ " ");
+                }file.write("\n");
+            }
+            file.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     // 打印第一行
@@ -264,6 +280,7 @@ class LogDataProcessor {
         }System.out.println("按照饱和度由大到小排序：");
         printFirstLine();
         for (int i = 0 ; i < logDatalList.size() ; i++) {
+
             logDatalList.get(array[i]).print();
         }
     }
@@ -329,7 +346,8 @@ class LogData {
     // 获取深度值
     public float getDepth() {
         return depth;
-    }
+    } 
+
     // 获取值数组
     public float[] getValues() {
         return values;
