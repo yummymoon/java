@@ -364,7 +364,6 @@ class LogData {
         }
         System.out.println();
     }
-    
 }
 
 class LogParameters {
@@ -399,5 +398,4 @@ class LogParameters {
             System.out.println(entry.getKey() + " = " + entry.getValue());
         }
     }
-
 }
